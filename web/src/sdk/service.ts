@@ -11,5 +11,4 @@ export const fetchAudioToText = async (audio: Blob) => {
     formData.append('timestamp', String(+new Date()))
 
     return api.post('/audioToText', formData)
-
 }

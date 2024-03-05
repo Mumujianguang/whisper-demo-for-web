@@ -1,7 +1,9 @@
 import { fetchAudioToText } from "./service";
 
 export default class AudioAI {
-    toText(audio: Blob) {
-        return fetchAudioToText(audio)
+    async toText(audio: Blob) {
+        const response = await fetchAudioToText(audio)
+
+        return response.data
     }
 }

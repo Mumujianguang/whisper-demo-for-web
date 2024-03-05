@@ -1,47 +1,75 @@
 import React, { useState } from 'react';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
 import AudioRTC from "../sdk/AudioRTC";
 import AudioAI from '../sdk/AudioAI';
 
+// 定义识别结果
+export type Result = {
+    // 识别内容 or 错误信息
+    text: string
+    // 识别耗时
+    transcribe_time?: number
+}
+
+type Props = {
+    // 识别完成事件
+    onResult?: (result: Result) => void;
+}
+
+// 状态枚举
 enum Status {
+    // 空闲
     IDLE = 'idle',
+    // 记录中
     RECORDING = 'recording',
 }
 
+// 文本映射
 const labelMapper = {
     [Status.IDLE]: '开始录音',
     [Status.RECORDING]: '停止录音',
 }
 
+// 过程转换映射
 const processStatusMapper = {
     [Status.IDLE]: Status.RECORDING,
     [Status.RECORDING]: Status.IDLE,
 }
 
-const audioAI = new AudioAI(); // 初始化AudioAI
-const audioRTC = new AudioRTC(); // 初始化AudioRTC
+// 初始化AudioAI
+const audioAI = new AudioAI(); 
+// 初始化AudioRTC
+const audioRTC = new AudioRTC(); 
 
-export default function RecordButton() {
-    const [file, setFile] = useState<File>();
+export default function RecordButton(props: Props) {
     const [status, setStatus] = useState(Status.IDLE);
+    const [loading, setLoading] = useState(false);
 
+    // 点击事件
     const onClick = async () => {
         if (status === Status.IDLE) {
+            // 开始录制
             audioRTC.startRecording();
         }
 
         if (status === Status.RECORDING) {
-            const blob = await audioRTC.stopRecording();
-
-            console.log('webm', blob)
-
+            // 结束录制
+            await audioRTC.stopRecording();
+            // 获取 wav 格式的 blob
             const waveBlob = await audioRTC.getWaveBlob();
 
-            console.log('waveBlob', waveBlob)
+            try {
+                setLoading(true);
 
-            audioAI.toText(waveBlob)
+                // 调用接口 - 语音识别
+                const response = await audioAI.toText(waveBlob)
 
-            // audioRTC.recorder.save(+new Date() + '.wav')
+                props.onResult?.(response);
+            } catch (error) {
+                props.onResult?.({ text: `${error}` });
+            } finally {
+                setLoading(false)
+            }
         }
 
         setStatus(processStatusMapper[status]);
@@ -50,11 +78,12 @@ export default function RecordButton() {
     return (
         <>
             <Button onClick={onClick}>{labelMapper[status]}</Button>
-            <input type='file' onChange={(e) => {
-                const file = e.target.files![0];
-                setFile(file);
-            }} />
+            {
+                loading &&
+                <Spin tip="识别中..." size="small">
+                    <span className="content" />
+                </Spin>
+            }
         </>
-        
     )
 }
