@@ -1,0 +1,5 @@
+fastapi==0.110.0
+librosa==0.10.1
+uvicorn==0.27.1
+whisper==1.1.10
+zhconv==1.4.3
