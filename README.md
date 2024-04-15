@@ -1,6 +1,8 @@
 
 # whisper demo for web
 
+简体中文 | [English](./README_EN.md)
+
 基于 WebRCT + whisper 的语音识别 demo
 
 ## 技术栈
@@ -16,6 +18,13 @@ python
 - 字词转换：```zhconv```
 
 ## 运行
+
+### 安装 whisper 依赖
+```
+pip3 install -U openai-whisper
+```
+更多细节请查阅 [whisper官网](https://github.com/openai/whisper)
+
 ### 前端环境
 ```
 cd ./web

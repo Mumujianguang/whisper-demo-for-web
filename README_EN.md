@@ -1,6 +1,8 @@
 
 # whisper demo for web
 
+English | [简体中文](./README.md)
+
 ## introduce
 web
 - build tool：```vite```
@@ -13,7 +15,14 @@ python
 - audio processing：```librosa```
 - word processing：```zhconv```
 
-## run 
+## run
+### setup whisper
+[-> whisper](https://github.com/openai/whisper)
+
+```
+pip3 install -U openai-whisper
+```
+
 ### web
 ```
 cd ./web
